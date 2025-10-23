@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.math.BigDecimal;
 
 public class Converter {
     
@@ -45,15 +46,15 @@ public class Converter {
             fracPart = fracConvertToDecimal(fracPart, radix);
         }
 
-        double fracPartDouble = Double.parseDouble(fracPart);
+        BigDecimal fracPartBD = new BigDecimal(fracPart);
 
         int precisionLimit = 20;
         StringBuilder fracValueStringBuilder = new StringBuilder();
-        while (fracPartDouble % 1.0 != 0 && precisionLimit-- > 0) {
-            fracPartDouble *= 2;
-            if (fracPartDouble > 1) {
+        while (fracPartBD.remainder(BigDecimal.valueOf(1)).compareTo(BigDecimal.ZERO) != 0 && precisionLimit-- > 0) {
+            fracPartBD = fracPartBD.multiply(BigDecimal.valueOf(2));
+            if (fracPartBD.compareTo(BigDecimal.valueOf(1)) == 1) {
                 fracValueStringBuilder.append("1");
-                fracPartDouble -= 1;
+                fracPartBD = fracPartBD.subtract(BigDecimal.valueOf(1));
             } else {
                 fracValueStringBuilder.append("0");
             }
@@ -61,6 +62,8 @@ public class Converter {
 
         return fracValueStringBuilder.toString();
     }
+
+    
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
