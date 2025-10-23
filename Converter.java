@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Converter {
     
@@ -63,7 +64,50 @@ public class Converter {
         return fracValueStringBuilder.toString();
     }
 
-    
+    static String fracConvertToOctal(String fracPart, int radix) {
+        if (radix != DECIMAL) {
+            fracPart = fracConvertToDecimal(fracPart, radix);
+        }
+
+        BigDecimal fracPartBD = new BigDecimal(fracPart);
+
+        BigDecimal intPart;
+        int precisionLimit = 20;
+        String intPartString;
+        StringBuilder fracValueStringBuilder = new StringBuilder();
+
+        while (fracPartBD.remainder(BigDecimal.valueOf(1)).compareTo(BigDecimal.ZERO) != 0 && precisionLimit-- > 0) {
+            fracPartBD = fracPartBD.multiply(BigDecimal.valueOf(8));
+            intPart = fracPartBD.setScale(0, RoundingMode.DOWN);
+            intPartString = intPart.toPlainString();
+            fracValueStringBuilder.append(intPartString);
+            fracPartBD = fracPartBD.subtract(intPart);
+        }
+
+        return fracValueStringBuilder.toString();
+    }
+
+    static String fracConvertToHex(String fracPart, int radix) {
+        if (radix != DECIMAL) {
+            fracPart = fracConvertToDecimal(fracPart, radix);
+        }
+
+        BigDecimal fracPartBD = new BigDecimal(fracPart);
+        int precisionLimit = 20;
+        int intPartInt;
+        BigDecimal intPart;
+        StringBuilder fracValueStringBuilder = new StringBuilder();
+
+        while (fracPartBD.remainder(BigDecimal.valueOf(1)).compareTo(BigDecimal.ZERO) != 0 && precisionLimit-- > 0) {
+            fracPartBD = fracPartBD.multiply(BigDecimal.valueOf(16));
+            intPart = fracPartBD.setScale(0, RoundingMode.DOWN);
+            fracPartBD = fracPartBD.subtract(intPart);
+            intPartInt = intPart.intValue();
+            fracValueStringBuilder.append(Integer.toHexString(intPartInt));
+        }
+
+        return fracValueStringBuilder.toString();
+    }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
